@@ -28,7 +28,7 @@ Node* insertintobst(Node* root, int d){
     else{
         root->right = insertintobst(root->right,d);
     }
-
+ 
     return root;
 }
 
@@ -41,6 +41,7 @@ void buildtree(Node* &root){
         cin>>d;
     }
 }
+
 
 void levelordertraversal(Node* root){
     queue<Node*>q;
@@ -71,12 +72,72 @@ void levelordertraversal(Node* root){
     }
 }
 
+Node* deleteanode(Node* root, int target){
+    if(root == NULL){
+        return NULL;
+    }
+
+    if(target > root->data){
+        root->right = deleteanode(root->right,target);
+        return root;
+    }
+    else if(target < root->data){
+        root->left = deleteanode(root->left,target);
+        return root;
+    }
+    else{
+        //leaf node
+        if(root->left ==   NULL && root->right == NULL){
+            delete root;
+            return NULL;
+        }
+        //node with only right child
+        else if(root->left == NULL && root->right != NULL){
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        }
+        //node with only left child
+        else if(root->left != NULL && root->right == NULL){
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+        //node with both left and right node
+        else{
+            //find the rightmost in the left subtree
+            Node* child = root->left;
+            Node* parent = root;
+
+            while(child->right != NULL){
+                parent = child;
+                child = child->right;
+            }
+
+            if(parent == root){
+                child->right = root->right;
+                delete root;
+                return child;
+            }
+            else{
+                parent->right = child->left;
+                child->left = root->left;
+                child->right = root->right;
+                return child;
+            }
+        }
+    }
+}
+
 int main(){
     Node* root = NULL;
 
     cout<<"Enter data for BST: ";
     buildtree(root);
 
+    levelordertraversal(root);
+
+    root = deleteanode(root,3);
     levelordertraversal(root);
 
     return 0;
